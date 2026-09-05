@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>剪集 ClipForge — macOS 视频批量裁剪工具</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #1d1d1f;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* ===== 头部 ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #007aff, #0055d4);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header .sub {
+            font-size: 16px;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .header .badge {
+            margin-left: auto;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ===== 卡片 ===== */
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card h2 .emoji {
+            font-size: 20px;
+        }
+
+        .card p,
+        .card li {
+            color: #374151;
+            font-size: 15px;
+        }
+
+        .card ul {
+            padding-left: 20px;
+            margin-top: 6px;
+        }
+
+        .card ul li {
+            margin-bottom: 4px;
+        }
+
+        /* ===== 功能网格 ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .features-grid .item {
+            background: #f9fafb;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #f3f4f6;
+        }
+
+        .features-grid .item .icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* ===== 价格标签 ===== */
+        .price-tag {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 6px;
+            background: #e8f0fe;
+            color: #0055d4;
+            padding: 4px 16px 4px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .price-tag small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #4b5563;
+        }
+
+        /* ===== 按钮 ===== */
+        .btn {
+            display: inline-block;
+            background: #007aff;
+            color: #fff;
+            padding: 10px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #0066d9;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #007aff;
+            border: 1.5px solid #007aff;
+        }
+
+        .btn-outline:hover {
+            background: #e8f0fe;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 13px;
+            color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer a {
+            color: #007aff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 640px) {
+            .header {
+                flex-wrap: wrap;
+            }
+            .header .badge {
+                margin-left: 0;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 20px;
+            }
+            .container {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== 头部 ===== -->
+        <header class="header">
+            <div class="header-icon">✂️</div>
+            <div>
+                <h1>剪集 <span style="font-weight:400;color:#6b7280;font-size:22px;">/</span> <span style="font-weight:400;color:#6b7280;font-size:22px;">ClipForge</span></h1>
+                <div class="sub">macOS 视频批量裁剪工具 · 无损流复制 · 关键帧吸附</div>
+            </div>
+            <span class="badge">✅ 已上架 App Store</span>
+        </header>
+
+        <!-- ===== 1. 简介 ===== -->
+        <section class="card">
+            <h2><span class="emoji">📖</span> 产品简介</h2>
+            <p>
+                <strong>剪集（ClipForge）</strong> 是一款专为 macOS 设计的视频批量裁剪工具，
+                帮助你快速、无损地处理大量视频文件。无论是批量去除片头片尾、提取精彩片段，
+                还是按关键帧精确切分，剪集都能以专业级效率完成。
+            </p>
+            <p style="margin-top:8px;">
+                <span class="price-tag">¥9.00 <small>一次性买断 · 永久有效</small></span>
+            </p>
+            <p style="margin-top:6px;font-size:14px;color:#6b7280;">
+                🆓 免费用户每日 3 次批量裁剪 · 配额每日 00:00 重置
+            </p>
+        </section>
+
+        <!-- ===== 2. 核心功能 ===== -->
+        <section class="card">
+            <h2><span class="emoji">⚡</span> 核心功能</h2>
+            <div class="features-grid">
+                <div class="item"><span class="icon">🎬</span> 批量裁剪（不限文件数）</div>
+                <div class="item"><span class="icon">🔒</span> 无损流复制（画质零损失）</div>
+                <div class="item"><span class="icon">🎯</span> 关键帧检测与一键吸附</div>
+                <div class="item"><span class="icon">📂</span> 递归扫描 3 级子目录</div>
+                <div class="item"><span class="icon">✂️</span> 片头 / 片尾独立开关</div>
+                <div class="item"><span class="icon">⏱️</span> 时间码输入 + 步进微调</div>
+                <div class="item"><span class="icon">💾</span> 预设管理（保存 / 调用）</div>
+                <div class="item"><span class="icon">🔄</span> 安全替换（原文件进废纸篓）</div>
+            </div>
+        </section>
+
+        <!-- ===== 3. 支持格式 ===== -->
+        <section class="card">
+            <h2><span class="emoji">📁</span> 支持格式</h2>
+            <p>
+                <strong>视频：</strong>
+                MP4 · MOV · MKV · AVI · M4V · 3GP · FLV · WMV · MPG · MPEG · WEBM
+            </p>
+            <p style="margin-top:4px;font-size:14px;color:#6b7280;">
+                📦 系统要求：macOS 13.0 或更高 · Apple Silicon / Intel
+            </p>
+        </section>
+
+        <!-- ===== 4. 应用场景 ===== -->
+        <section class="card">
+            <h2><span class="emoji">🎯</span> 适用场景</h2>
+            <ul>
+                <li>📺 影视剧集片头片尾广告太多 → 一键批量去除</li>
+                <li>🎓 课程录像前后有无关内容 → 快速裁剪</li>
+                <li>🎮 直播录屏需要批量处理 → 高效整理</li>
+                <li>📦 素材整理需要统一裁剪 → 自动化工作流</li>
+            </ul>
+        </section>
+
+        <!-- ===== 5. 技术支持 ===== -->
+        <section class="card">
+            <h2><span class="emoji">🛠️</span> 技术支持</h2>
+            <p><strong>📧 邮箱：</strong> <a href="mailto:appdev@micrao.com">appdev@micrao.com</a></p>
+            <p style="margin-top:4px;font-size:14px;color:#6b7280;">
+                我们会在 24 小时内回复您的咨询。
+            </p>
+            <div class="btn-group" style="margin-top:12px;">
+                <a href="mailto:appdev@micrao.com?subject=剪集%20ClipForge%20技术支持" class="btn">📧 发送邮件</a>
+                <a href="https://github.com/yourusername/ClipForge" class="btn btn-outline" target="_blank">🐙 GitHub</a>
+            </div>
+        </section>
+
+        <!-- ===== 6. 法律声明 ===== -->
+        <section class="card">
+            <h2><span class="emoji">⚖️</span> 法律声明 &amp; 隐私政策</h2>
+            <p><strong>📄 隐私政策</strong><br />
+                剪集（ClipForge）<strong>不收集任何用户数据</strong>。
+                所有视频处理均在本地完成，不上传任何内容。
+                内购由 Apple App Store 安全处理，本应用不接触支付信息。
+            </p>
+            <p style="margin-top:12px;"><strong>📄 服务条款</strong><br />
+                本应用按“现状”提供。裁剪操作不可逆，请在使用前备份重要文件。
+                原文件在替换时会被移入废纸篓，可恢复。
+            </p>
+            <p style="margin-top:12px;font-size:13px;color:#6b7280;">
+                <strong>FFmpeg 声明：</strong>
+                本应用内嵌 FFmpeg（LGPL v2.1+ 许可），作为独立作品使用，未修改源码。
+                FFmpeg 源码与构建脚本可在
+                <a href="https://github.com/yourusername/ClipForge" target="_blank">GitHub</a>
+                获取。
+            </p>
+            <p style="margin-top:8px;font-size:13px;color:#9ca3af;">
+                最后更新：2026 年 8 月 24 日
+            </p>
+        </section>
+
+        <!-- ===== 7. 下载入口 ===== -->
+        <section class="card" style="text-align:center;background:linear-gradient(135deg,#f0f7ff 0%,#ffffff 100%);border-color:#b3d4fc;">
+            <h2 style="justify-content:center;"><span class="emoji">📲</span> 下载剪集</h2>
+            <p style="font-size:16px;margin-bottom:16px;">
+                <strong>macOS 13.0+</strong> · 免费下载 · 开箱即用
+            </p>
+            <div class="btn-group" style="justify-content:center;">
+                <a href="#" class="btn" style="pointer-events:none;opacity:0.7;">⬇️ 即将上架 App Store</a>
+                <a href="https://github.com/yourusername/ClipForge" class="btn btn-outline" target="_blank">🐙 开源社区</a>
+            </div>
+            <p style="margin-top:12px;font-size:13px;color:#6b7280;">
+                App Store 搜索“剪集”或“ClipForge”即可下载
+            </p>
+        </section>
+
+        <!-- ===== 页脚 ===== -->
+        <footer class="footer">
+            <span>© 2026 剪集 ClipForge · Made with ❤️</span>
+            <span>
+                <a href="mailto:appdev@micrao.com">联系我们</a> ·
+                <a href="https://github.com/yourusername/ClipForge" target="_blank">GitHub</a>
+            </span>
+        </footer>
+
+    </div>
+
+</body>
+</html>
